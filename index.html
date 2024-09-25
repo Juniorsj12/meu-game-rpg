@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Bem-vindo ao RPG</h1>
+    
+    <div id="jogador-info">
+        <h2>Personagem</h2>
+        <p><strong>Nome:</strong> <span id="nome-jogador">Herói</span></p>
+        <p><strong>Vida:</strong> <span id="vida-jogador">100</span></p>
+        <p><strong>Habilidades:</strong> <span id="habilidades-jogador"></span></p>
+        <p><strong>Missões:</strong> <span id="missoes-jogador"></span></p>
+    </div>
+
+    <div id="acao">
+        <h2>Ação</h2>
+        <label for="acao-selecao">Escolha uma ação:</label>
+        <select id="acao-selecao">
+            <option value="combater">Combater</option>
+            <option value="explorar">Explorar</option>
+            <option value="missao">Missão</option>
+            <option value="habilidade">Usar Habilidade</option>
+        </select>
+        <button onclick="executarAcao()">Executar Ação</button>
+    </div>
+
+    <div id="resultado"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
