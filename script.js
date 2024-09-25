@@ -1,122 +1,85 @@
-// Classe para Habilidades
-class Habilidade {
-    constructor(nome, nivel) {
-        this.nome = nome;
-        this.nivel = nivel;
-    }
-
-    evoluir() {
-        this.nivel++;
-        return `${this.nome} evoluiu para o nível ${this.nivel}!`;
-    }
-}
-
-// Classe para Missões
-class Missao {
-    constructor(nome, descricao, recompensa) {
-        this.nome = nome;
-        this.descricao = descricao;
-        this.completada = false;
-        this.recompensa = recompensa;
-    }
-
-    completar() {
-        this.completada = true;
-        return `Missão "${this.nome}" completada! Recompensa: ${this.recompensa}`;
-    }
-
-    descrever() {
-        return `${this.nome}: ${this.descricao} - ${this.completada ? "Completada" : "Não completada"}`;
-    }
-}
-
-// Definindo habilidades do jogador
-let habilidades = [
-    new Habilidade("Manipulação de Fogo", 1),
-    new Habilidade("Manipulação de Água", 1),
-    new Habilidade("Necromancia", 1),
-    new Habilidade("Telecinese", 1),
-    new Habilidade("Cura", 1)
-];
-
-// Definindo missões
-let missoes = [
-    new Missao("Coletar Ervas", "Cole 5 ervas medicinais na floresta.", 50),
-    new Missao("Derrotar o Monstro", "Derrote o monstro da caverna.", 100),
-];
-
-// Variáveis do jogador
-let jogador = {
-    nome: "Herói",
-    vida: 100,
-    habilidades: habilidades,
-    missoes: missoes
+let player = {
+    name: 'Heroi',
+    health: 100,
+    level: 1,
+    experience: 0,
+    inventory: [],
+    blessings: []
 };
 
-// Função para atualizar o status do jogador na tela
-function atualizarJogadorInfo() {
-    document.getElementById("nome-jogador").innerText = jogador.nome;
-    document.getElementById("vida-jogador").innerText = jogador.vida;
-    
-    let habilidadesTexto = jogador.habilidades.map(hab => `${hab.nome} (Nível ${hab.nivel})`).join(", ");
-    document.getElementById("habilidades-jogador").innerText = habilidadesTexto;
+let enemy = {
+    name: 'Inimigo',
+    health: 50,
+};
 
-    let missoesTexto = jogador.missoes.map(missao => missao.descrever()).join("<br>");
-    document.getElementById("missoes-jogador").innerHTML = missoesTexto;
+let missions = [
+    { id: 1, description: "Derrote 1 inimigo.", completed: false },
+    { id: 2, description: "Encontre um item.", completed: false }
+];
+
+function updateStatus() {
+    const status = `
+        <strong>Nome:</strong> ${player.name}<br>
+        <strong>Vida:</strong> ${player.health}<br>
+        <strong>Nível:</strong> ${player.level}<br>
+        <strong>XP:</strong> ${player.experience}
+    `;
+    document.getElementById('status').innerHTML = status;
 }
 
-// Função para executar ações no jogo
-function executarAcao() {
-    let acaoSelecionada = document.getElementById("acao-selecao").value;
-
-    switch (acaoSelecionada) {
-        case "combater":
-            combater();
-            break;
-        case "explorar":
-            explorar();
-            break;
-        case "missao":
-            mostrarMissoes();
-            break;
-        case "habilidade":
-            usarHabilidade();
-            break;
+function levelUp() {
+    if (player.experience >= player.level * 100) {
+        player.level++;
+        player.health += 20; // Aumenta a vida ao subir de nível
+        alert(`Parabéns! Você subiu para o nível ${player.level}!`);
     }
 }
 
-// Função de combate
-function combater() {
-    let dano = Math.floor(Math.random() * 10) + 1;
-    jogador.vida -= dano;
-    if (jogador.vida <= 0) {
-        jogador.vida = 0;
-        document.getElementById("resultado").innerText = "Você foi derrotado!";
+function fight() {
+    let damage = Math.floor(Math.random() * 20) + 5;
+    enemy.health -= damage;
+    player.health -= Math.floor(Math.random() * 10);
+
+    if (enemy.health <= 0) {
+        alert('Você derrotou o inimigo!');
+        player.experience += 20;
+        levelUp(); // Verifica se o jogador sobe de nível
+        enemy.health = 50; // Resetando saúde do inimigo
+    }
+    if (player.health <= 0) {
+        alert('Você foi derrotado!');
+    }
+    updateStatus();
+}
+
+function explore() {
+    const foundItem = `Item ${Math.floor(Math.random() * 100)}`;
+    player.inventory.push(foundItem);
+    updateInventory();
+    alert(`Você encontrou: ${foundItem}`);
+}
+
+function updateInventory() {
+    document.getElementById('items').innerHTML = player.inventory.map(item => `<div class="item">${item}</div>`).join('');
+}
+
+function acceptMission() {
+    let mission = missions.find(m => !m.completed);
+    if (mission) {
+        alert(`Missão aceita: ${mission.description}`);
+        // Aqui você pode implementar a lógica para completar a missão
+        mission.completed = true; // Marca a missão como concluída
+        updateMissions();
     } else {
-        document.getElementById("resultado").innerText = `Você recebeu ${dano} de dano! Vida restante: ${jogador.vida}`;
+        alert("Todas as missões foram concluídas!");
     }
-    atualizarJogadorInfo();
 }
 
-// Função para explorar o mundo
-function explorar() {
-    let encontrado = Math.random() < 0.5 ? "nada" : "um item misterioso!";
-    document.getElementById("resultado").innerText = `Você explorou e encontrou ${encontrado}`;
+function updateMissions() {
+    document.getElementById('missionList').innerHTML = missions.map(mission => 
+        `<div class="mission">${mission.description} - ${mission.completed ? "Concluída" : "Pendente"}</div>`
+    ).join('');
 }
 
-// Função para mostrar missões
-function mostrarMissoes() {
-    let missoesTexto = jogador.missoes.map(missao => missao.descrever()).join("<br>");
-    document.getElementById("resultado").innerHTML = missoesTexto;
-}
-
-// Função para usar habilidades
-function usarHabilidade() {
-    let habilidade = jogador.habilidades[0];
-    let resultado = habilidade.evoluir();
-    document.getElementById("resultado").innerText = resultado;
-    atualizarJogadorInfo();
-}
-
-// Inicializa as informações do jogador na tela ao carregar a página
-atualizarJogadorInfo();
+updateStatus();
+updateMissions();
